@@ -50,9 +50,5 @@ export default function AuthHeader() {
     );
   }
 
-  return (
-    <div className="flex align-center justify-between">
-      <Suspense fallback={<Skeleton />}>{authContent}</Suspense>
-    </div>
-  );
+  return <div>{authContent}</div>;
 }

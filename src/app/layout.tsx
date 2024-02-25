@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import '@/styles/globals.css';
 import Providers from './providers';
 
-export const fontSans = FontSans({
+const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans',
 });
@@ -28,10 +28,12 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <Providers>
-          <Header />
-        </Providers>
-        {children}
+        <div className="container mx-auto px-4 max-w-6xl">
+          <Providers>
+            <Header />
+            {children}
+          </Providers>
+        </div>
       </body>
     </html>
   );
