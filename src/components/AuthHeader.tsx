@@ -7,11 +7,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from './ui/popover';
-import { Skeleton } from './ui/skeleton';
 import { signIn } from '@/actions';
 import { useSession } from 'next-auth/react';
 import { signOut } from '../actions/signOut';
-import { Suspense } from 'react';
+import { Skeleton } from './ui/skeleton';
 
 export default function AuthHeader() {
   const session = useSession();
@@ -19,31 +18,46 @@ export default function AuthHeader() {
   let authContent: React.ReactNode;
 
   if (session.status === 'loading') {
-    authContent = null;
+    authContent = <Skeleton className="w-32 h-10 bg-transparent" />;
   } else if (session.data?.user) {
     authContent = (
-      <Popover>
-        <PopoverTrigger>
-          {' '}
-          <Avatar>
-            <AvatarImage src={session.data.user.image || ''} />
-            <AvatarFallback>{session.data.user.name}</AvatarFallback>
-          </Avatar>
-        </PopoverTrigger>
-        <PopoverContent>
-          <form action={signOut}>
-            <Button type="submit">Sign out</Button>
-          </form>
-        </PopoverContent>
-      </Popover>
+      <div className="text-center h-10">
+        <Popover>
+          <PopoverTrigger>
+            {' '}
+            <Avatar>
+              <AvatarImage
+                src={session.data.user.image || ''}
+                className="w-10 h-10 rounded-full items-center"
+              />
+              <AvatarFallback>
+                {session.data.user.name}
+              </AvatarFallback>
+            </Avatar>
+          </PopoverTrigger>
+          <PopoverContent>
+            <form action={signOut}>
+              <Button type="submit">Sign out</Button>
+            </form>
+          </PopoverContent>
+        </Popover>
+      </div>
     );
   } else {
     authContent = (
-      <form action={signIn}>
-        <Button type="submit" variant="outline">
+      <form action={signIn} className="flex items-center space-x-2">
+        <Button
+          type="submit"
+          variant="outline"
+          className="px-4 py-2 border border-gray-300 rounded-md"
+        >
           Sign in
         </Button>
-        <Button type="submit" variant="secondary">
+        <Button
+          type="submit"
+          variant="secondary"
+          className="px-4 py-2 bg-blue-500 text-white rounded-md"
+        >
           Sign Up
         </Button>
       </form>
