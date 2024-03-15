@@ -1,7 +1,5 @@
-export type CreateTopicFormState = {
-  errors: {
-    name?: string[];
-    description?: string[];
-    _form?: string[];
-  };
+export type TopicFormState = {
+  message: string;
+  fields?: Record<string, string>;
+  errors?: string[];
 };

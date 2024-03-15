@@ -1,5 +1,7 @@
 'use client';
 
+import { z } from 'zod';
+import { X } from 'lucide-react';
 import {
   Dialog,
   DialogClose,
@@ -9,15 +11,42 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { useRef } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { useFormState } from 'react-dom';
 import { createTopic } from '@/actions/create-topic';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { createTopicValidation } from '@/schemas/createTopicValidationSchema';
 
 function TopicCreateForm() {
+  const [isOpen, setIsOpen] = useState(false);
   const [formState, formAction] = useFormState(createTopic, {
-    errors: {},
+    message: '',
+  });
+
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const form = useForm<z.output<typeof createTopicValidation>>({
+    resolver: zodResolver(createTopicValidation),
+    defaultValues: {
+      name: '',
+      description: '',
+      ...(formState.fields ?? {}),
+    },
   });
   console.log(formState.errors);
   return (
@@ -30,50 +59,74 @@ function TopicCreateForm() {
               New Topic
             </DialogTitle>
           </DialogHeader>
-          <form action={formAction}>
-            <div>
-              <Label htmlFor="name" className="text-white">
-                Name
-              </Label>
-              <Input
-                id="name"
-                name="name"
-                type="text"
-                className="border-white"
-              />
-              {formState.errors.name ? (
-                <div className="rounded p-2 bg-red-200 border border-red-400">
-                  {formState.errors.name?.join(', ')}
-                </div>
-              ) : null}
-            </div>
-            <div>
-              <Label htmlFor="description" className="text-white">
-                Description
-              </Label>
-              <Input
-                id="description"
-                name="description"
-                type="text"
-                className="border-white text-white"
-              />
-              {formState.errors.description ? (
-                <div className="rounded p-2 bg-red-200 border border-red-400">
-                  {formState.errors.description?.join(', ')}
-                </div>
-              ) : null}
-            </div>
-            {formState.errors._form ? (
-              <div className="rounded p-2 bg-red-200 border border-red-400">
-                {formState.errors._form?.join(', ')}
+          <Form {...form}>
+            {formState.message !== '' && !formState.errors && (
+              <div className="text-red-500">{formState.message}</div>
+            )}
+            {formState.errors && (
+              <div className="text-red-500">
+                <ul>
+                  {formState.errors.map((error) => (
+                    <li key={error} className="flex gap-1">
+                      <X fill="red" />
+                      {error}
+                    </li>
+                  ))}
+                </ul>
               </div>
-            ) : null}
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="submit">Save changes</Button>
-              </DialogClose>
-            </DialogFooter>
-          </form>
+            )}
+            <form
+              ref={formRef}
+              className="space-y-8"
+              action={formAction}
+              onSubmit={(evt) => {
+                evt.preventDefault();
+                form.handleSubmit(() => {
+                  formAction(new FormData(formRef.current!));
+                })(evt);
+              }}
+            >
+              <div className="flex flex-col gap-2">
+                <div>
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Your topic name.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div>
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Your topic description.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+              <Button type="submit">Submit</Button>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>
