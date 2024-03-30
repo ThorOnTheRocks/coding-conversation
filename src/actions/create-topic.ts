@@ -13,6 +13,8 @@ export async function createTopic(
   formState: TopicFormState,
   data: FormData
 ): Promise<TopicFormState> {
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
   const formData = Object.fromEntries(data);
   const parsed = createTopicValidation.safeParse(formData);
 

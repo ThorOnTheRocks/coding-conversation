@@ -4,9 +4,7 @@ import { z } from 'zod';
 import { X } from 'lucide-react';
 import {
   Dialog,
-  DialogClose,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -20,8 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { useRef } from 'react';
-import { Label } from '@/components/ui/label';
+import { BaseSyntheticEvent, useRef, useTransition } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -31,9 +28,11 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createTopicValidation } from '@/schemas/createTopicValidationSchema';
+import { SubmitButton } from './ButtonLoading/SubmitButton';
 
 function TopicCreateForm() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
   const [formState, formAction] = useFormState(createTopic, {
     message: '',
   });
@@ -48,9 +47,18 @@ function TopicCreateForm() {
       ...(formState.fields ?? {}),
     },
   });
-  console.log(formState.errors);
+
+  const handleSubmit = (evt: BaseSyntheticEvent) => {
+    evt.preventDefault();
+    form.handleSubmit(() => {
+      startTransition(async () => {
+        await formAction(new FormData(formRef.current!));
+      });
+    })(evt);
+  };
+
   return (
-    <div className="">
+    <div>
       <Dialog>
         <DialogTrigger>Create New Topic</DialogTrigger>
         <DialogContent>
@@ -79,12 +87,7 @@ function TopicCreateForm() {
               ref={formRef}
               className="space-y-8"
               action={formAction}
-              onSubmit={(evt) => {
-                evt.preventDefault();
-                form.handleSubmit(() => {
-                  formAction(new FormData(formRef.current!));
-                })(evt);
-              }}
+              onSubmit={handleSubmit}
             >
               <div className="flex flex-col gap-2">
                 <div>
@@ -124,7 +127,9 @@ function TopicCreateForm() {
                   />
                 </div>
               </div>
-              <Button type="submit">Submit</Button>
+              <SubmitButton isPending={isPending}>
+                Submit
+              </SubmitButton>
             </form>
           </Form>
         </DialogContent>
