@@ -9,7 +9,7 @@ export default function Header() {
       <Link href={paths.paths.home()}>Coding Conversations</Link>
       <div className="flex-grow mx-4">
         <Input
-          className="w-full px-4 py-2 rounded-md border border-gray-300"
+          className="px-4 py-2 rounded-md border border-gray-300"
           type="text"
         />
       </div>

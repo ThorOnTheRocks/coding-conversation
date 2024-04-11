@@ -18,7 +18,7 @@ export default function AuthHeader() {
   let authContent: React.ReactNode;
 
   if (session.status === 'loading') {
-    authContent = <Skeleton className="w-32 h-10 bg-transparent" />;
+    authContent = <Skeleton className="w-10 h-10 bg-transparent" />;
   } else if (session.data?.user) {
     authContent = (
       <div className="text-center h-10">
@@ -49,14 +49,14 @@ export default function AuthHeader() {
         <Button
           type="submit"
           variant="outline"
-          className="px-4 py-2 border border-gray-300 rounded-md"
+          className="px-4 py-2 border border-gray-300 rounded"
         >
           Sign in
         </Button>
         <Button
           type="submit"
           variant="secondary"
-          className="px-4 py-2 bg-blue-500 text-white rounded-md"
+          className="px-4 py-2 bg-blue-500 text-white rounded"
         >
           Sign Up
         </Button>
